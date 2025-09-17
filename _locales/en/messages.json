@@ -1,0 +1,32 @@
+{
+  "title": {
+    "message": "Setup Assistant"
+  },
+  "setupDescription": {
+    "message": "Click to configure Sinatra on your VTEX account"
+  },
+  "setupButton": {
+    "message": "Start Setup"
+  },
+  "statusProcessing": {
+    "message": "Processing..."
+  },
+  "statusSuccess": {
+    "message": "Setup completed successfully!"
+  },
+  "statusError": {
+    "message": "An error occurred during setup."
+  },
+  "notVTEXTab": {
+    "message": "The active tab is not a VTEX store."
+  },
+  "cookieNotFound": {
+    "message": "VtexIdclientAutCookie not found."
+  },
+  "setupFailed": {
+    "message": "An error occurred during setup."
+  },
+  "setupCompleted": {
+    "message": "Setup completed on account and white-label sellers."
+  }
+}

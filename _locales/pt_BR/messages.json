@@ -1,0 +1,32 @@
+{
+  "title": {
+    "message": "Assistente de configuração"
+  },
+  "setupDescription": {
+    "message": "Clique para configurar o Sinatra na sua conta VTEX"
+  },
+  "setupButton": {
+    "message": "Iniciar Configuração"
+  },
+  "statusProcessing": {
+    "message": "Executando configuração..."
+  },
+  "statusSuccess": {
+    "message": "Configuração concluída com sucesso!"
+  },
+  "statusError": {
+    "message": "Ocorreu um erro durante a configuração."
+  },
+  "notVTEXTab": {
+    "message": "A aba ativa não é uma loja VTEX."
+  },
+  "cookieNotFound": {
+    "message": "Cookie VtexIdclientAutCookie não encontrado."
+  },
+  "setupFailed": {
+    "message": "Ocorreu um erro durante o setup."
+  },
+  "setupCompleted": {
+    "message": "Configuração feita na conta e nos sellers white-label."
+  }
+}

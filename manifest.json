@@ -22,7 +22,7 @@
     }
   },
 
-  "permissions": ["scripting", "storage", "cookies", "activeTab"],
+  "permissions": ["cookies", "activeTab"],
 
   "host_permissions": [
     "https://*.vtexcommercestable.com.br/*",

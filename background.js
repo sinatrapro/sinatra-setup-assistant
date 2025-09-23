@@ -63,7 +63,6 @@ const createSinatraRole = async (sessionId, account, roles) => {
       body: JSON.stringify(roles),
     }
   );
-  console.log("Role criada:", role.id);
   return role.id;
 };
 
@@ -88,7 +87,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     try {
       const [tab] = await chrome.tabs.query({
         active: true,
-        currentWindow: true,
+        lastFocusedWindow: true,
       });
 
       if (!tab?.url?.includes(".myvtex.com")) {
@@ -123,7 +122,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         rolesData
       );
 
-      console.log("Params => ", sessionId, account, apiKeyId, [sinatraRoleId]);
       // 4. Adiciona a Role Sinatra na API Key
       await addRoleToApiKey(sessionId, account, apiKeyId, [sinatraRoleId]);
 

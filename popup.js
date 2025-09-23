@@ -47,9 +47,5 @@ button.addEventListener("click", () => {
     const msg =
       chrome.i18n.getMessage(response.messageKey) || "Setup completed!";
     setStatus(msg, "success");
-
-    if (response.data?.sellerResults) {
-      displaySellers(response.data.sellerResults);
-    }
   });
 });

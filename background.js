@@ -12,6 +12,9 @@ const fetchWithCookie = async (sessionId, url, options = {}) => {
     const text = await response.text();
     throw new Error(`Erro ${response.status} ao acessar ${url}: ${text}`);
   }
+
+  if (response.status === 204) return null; // No Content
+
   return response.json();
 };
 
@@ -25,7 +28,43 @@ const createApiKey = async (sessionId, account) => {
       body: JSON.stringify({ label: "Sinatra Access" }),
     }
   );
-  return apiKey;
+  return apiKey.id;
+};
+
+// Helper para importar API Key
+const importApiKey = async (sessionId, account, apiKeyId, roleId) => {
+  const apiKey = await fetchWithCookie(
+    sessionId,
+    `https://${account}.vtexcommercestable.com.br/api/license-manager/site/pvt/logins`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        name: apiKeyId,
+        email: apiKeyId,
+        roles: [
+          {
+            id: roleId,
+          },
+        ],
+      }),
+    }
+  );
+  return apiKey.id;
+};
+
+// Helper para criar Role
+const createSinatraRole = async (sessionId, account, roles) => {
+  const role = await fetchWithCookie(
+    sessionId,
+    `https://${account}.vtexcommercestable.com.br/api/license-manager/site/pvt/roles`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(roles),
+    }
+  );
+  console.log("Role criada:", role.id);
+  return role.id;
 };
 
 // Helper para adicionar Role
@@ -52,14 +91,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         currentWindow: true,
       });
 
-      if (
-        !tab?.url?.includes("vtexcommercestable.com.br") &&
-        !tab?.url?.includes("myvtex.com")
-      ) {
+      if (!tab?.url?.includes(".myvtex.com")) {
         sendResponse({ success: false, errorKey: "notVTEXTab" });
         return;
       }
 
+      // 1. Pega o cookie de autenticação
       const account = new URL(tab.url).hostname.split(".")[0];
 
       const cookie = await chrome.cookies.get({
@@ -73,17 +110,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       const sessionId = cookie.value;
 
-      const apiKey = await createApiKey(sessionId, account);
+      // 2. Cria a API Key para a conta principal
+      const apiKeyId = await createApiKey(sessionId, account);
 
+      // 3. Cria a Role Sinatra
       const rolesData = await fetch(
         chrome.runtime.getURL("vtex-roles.json")
       ).then((res) => res.json());
-      const productIds = Array.from(
-        new Set(rolesData.map((item) => item.productId))
+      const sinatraRoleId = await createSinatraRole(
+        sessionId,
+        account,
+        rolesData
       );
 
-      await addRoleToApiKey(sessionId, account, apiKey.id, productIds);
+      console.log("Params => ", sessionId, account, apiKeyId, [sinatraRoleId]);
+      // 4. Adiciona a Role Sinatra na API Key
+      await addRoleToApiKey(sessionId, account, apiKeyId, [sinatraRoleId]);
 
+      // 5. Pega a lista de sellers
       const sellers = await fetchWithCookie(
         sessionId,
         `https://${account}.vtexcommercestable.com.br/api/catalog_system/pvt/seller/list?sellerType=2`,
@@ -93,13 +137,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const sellerResults = await Promise.allSettled(
         sellers.map(async (seller) => {
           try {
-            const sellerApiKey = await createApiKey(sessionId, seller.SellerId);
-            await addRoleToApiKey(
+            // 6. Cria a role para o seller
+            const roleId = await createSinatraRole(
               sessionId,
               seller.SellerId,
-              sellerApiKey.id,
-              productIds
+              rolesData
             );
+
+            // 7. Importa a API Key para o seller
+            await importApiKey(sessionId, seller.SellerId, apiKeyId, roleId);
             return { sellerId: seller.SellerId, success: true };
           } catch (err) {
             return {

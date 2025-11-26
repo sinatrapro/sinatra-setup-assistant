@@ -1,7 +1,7 @@
 {
   "name": "Sinatra Setup Assistant",
   "description": "Automates Sinatra setup on VTEX: creates client profiles, generates API keys, and syncs them across linked white-label sellers.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "manifest_version": 3,
   "default_locale": "en",
 

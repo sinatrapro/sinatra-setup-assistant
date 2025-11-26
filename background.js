@@ -18,6 +18,20 @@ const fetchWithCookie = async (sessionId, url, options = {}) => {
   return response.json();
 };
 
+// Helper para recuperar a API Key
+const getApiKey = async (sessionId, account) => {
+  const apiKey = await fetchWithCookie(
+    sessionId,
+    `https://${account}.vtexcommercestable.com.br/api/vlm/appkeys`,
+    {
+      method: "GET",
+    }
+  );
+  return apiKey.filter((key) =>
+    key.label?.toLowerCase()?.includes("sinatra")
+  )[0]?.id;
+};
+
 // Helper para criar API Key
 const createApiKey = async (sessionId, account) => {
   const apiKey = await fetchWithCookie(
@@ -109,8 +123,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       const sessionId = cookie.value;
 
-      // 2. Cria a API Key para a conta principal
-      const apiKeyId = await createApiKey(sessionId, account);
+      // 2. Cria a API Key para a conta principal caso não exista
+      let apiKeyId;
+      apiKeyId = await getApiKey(sessionId, account);
+      if (!apiKeyId) {
+        apiKeyId = await createApiKey(sessionId, account);
+      }
 
       // 3. Cria a Role Sinatra
       const rolesData = await fetch(

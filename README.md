@@ -126,7 +126,3 @@ A interface segue o idioma do navegador, com suporte a português (`pt_BR`) e in
 ## Contribuindo
 
 Issues e pull requests são bem-vindos. Para testar uma alteração, recarregue a extensão em `chrome://extensions` e execute o fluxo em uma conta VTEX de teste. Logs do service worker ficam disponíveis em **Inspecionar visualizações: service worker** na página da extensão.
-
-## Licença
-
-Distribuído sob a licença MIT. Veja [`LICENSE`](LICENSE) para mais detalhes.
